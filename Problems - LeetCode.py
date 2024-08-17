@@ -82,4 +82,40 @@ df1.join(df2,df1.product_id == df2.product_id, "inner")\
 
 # COMMAND ----------
 
+# Write a solution to find the IDs of the users who visited without making any transactions and the number of times they made these types of visits.
+
+from pyspark.sql.functions import *
+
+df1 = spark.read.table("visits")
+df2 = spark.read.table("transactions")
+
+df1.join(df2,df1.visit_id == df2.visit_id, "left")\
+    .filter(col("transactions.transaction_id").isNull())\
+    .groupBy("customer_id")\
+    .agg(count("visits.visit_id").alias("count_no_trans"))\
+    .select("customer_id", "count_no_trans")\
+    .show()
+
+# COMMAND ----------
+
+# Write a solution to find all dates' Id with higher temperatures compared to its previous dates (yesterday).
+
+# Return the result table in any order.
+
+from pyspark.sql.functions import datediff
+
+# Read the table into two DataFrames
+df1 = spark.read.table("weather")
+df2 = spark.read.table("weather")
+
+# Perform the join and apply the filtering conditions
+df1.crossJoin(df2)\
+    .where((datediff(df1.recordDate, df2.recordDate) == 1) & (df1.temperature > df2.temperature)) \
+    .select(df1.id, df1.recordDate, df1.temperature, df2.recordDate.alias("prev_recordDate"), df2.temperature.alias("prev_temperature")) \
+    .show()
+
+
+
+# COMMAND ----------
+
 

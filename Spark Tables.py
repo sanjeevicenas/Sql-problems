@@ -231,3 +231,135 @@ product_df.write.mode("overwrite").saveAsTable("Product")
 # Display the tables
 display(spark.table("Sales"))
 display(spark.table("Product"))
+
+# COMMAND ----------
+
+from pyspark.sql.types import StructType, StructField, IntegerType
+
+# Define the schema for Visits table
+visits_schema = StructType([
+    StructField("visit_id", IntegerType(), True),
+    StructField("customer_id", IntegerType(), True)
+])
+
+# Create the data for Visits table
+visits_data = [
+    (1, 101),
+    (2, 102),
+    (3, 103),
+    (4, 104)
+]
+
+# Create a Spark DataFrame for Visits table
+visits_df = spark.createDataFrame(visits_data, visits_schema)
+
+# Create the Visits table
+visits_df.write.mode("overwrite").saveAsTable("Visits")
+
+# Define the schema for Transactions table
+transactions_schema = StructType([
+    StructField("transaction_id", IntegerType(), True),
+    StructField("visit_id", IntegerType(), True),
+    StructField("amount", IntegerType(), True)
+])
+
+# Create the data for Transactions table
+transactions_data = [
+    (1, 1, 500),
+    (2, 2, 1500),
+    (3, 3, 2000),
+    (4, 4, 2500)
+]
+
+# Create a Spark DataFrame for Transactions table
+transactions_df = spark.createDataFrame(transactions_data, transactions_schema)
+
+# Create the Transactions table
+transactions_df.write.mode("overwrite").saveAsTable("Transactions")
+
+# Display the tables
+display(spark.table("Visits"))
+display(spark.table("Transactions"))
+
+# COMMAND ----------
+
+from pyspark.sql.types import StructType, StructField, IntegerType
+
+# Define the schema for Visits table
+visits_schema = StructType([
+    StructField("visit_id", IntegerType(), True),
+    StructField("customer_id", IntegerType(), True)
+])
+
+# Create the data for Visits table
+visits_data = [
+    (1,23),
+    (2,9),
+    (4,30),
+    (5,54),
+    (6,96),
+    (7,54),
+    (8,54)
+]
+
+transactions_schema = StructType([
+    StructField("transaction_id", IntegerType(), True),
+    StructField("visit_id", IntegerType(), True),
+    StructField("amount", IntegerType(), True)
+])
+
+transactions_data = [
+(2,5,310),
+(3,5,300),
+(9,5,200),
+(12,1,910),
+(13,2,970)
+]
+
+# Create a Spark DataFrame for Visits
+visits_df = spark.createDataFrame(visits_data, visits_schema)
+
+transactions_df = spark.createDataFrame(transactions_data, transactions_schema)
+
+
+# Create the Visits table
+visits_df.write.mode("overwrite").saveAsTable("Visits")
+transactions_df.write.mode("overwrite").saveAsTable("Transactions")
+
+# Display the Visits table
+display(spark.table("Visits"))
+display(spark.table("Transactions"))
+
+# COMMAND ----------
+
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+from datetime import date
+
+# Define the schema
+weather_schema = StructType([
+    StructField("id", IntegerType(), True),
+    StructField("recordDate", DateType(), True),
+    StructField("temperature", IntegerType(), True)
+])
+
+# Define the data
+weather_data = [
+    (1, date(2015, 1, 1), 10),
+    (2, date(2015, 1, 2), 25),
+    (3, date(2015, 1, 3), 20),
+    (4, date(2015, 1, 4), 30)
+]
+
+# Create the DataFrame
+weather_df = spark.createDataFrame(weather_data, schema=weather_schema)
+
+# Save as a table
+weather_df.write.mode("overwrite").saveAsTable("Weather")
+
+# Display the table (use this if you are in a Databricks environment)
+display(spark.table("Weather"))
+
+# COMMAND ----------
+
+
