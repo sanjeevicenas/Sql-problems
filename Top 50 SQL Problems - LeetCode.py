@@ -1,4 +1,9 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC # Select clause
+
+# COMMAND ----------
+
 # 1) 1757. Recyclable and Low Fat Products
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
@@ -137,8 +142,110 @@ where author_id = viewer_id
 group by author_id
 order by author_id
                 """)
-sql.show()
+df.filter(
+    col('author_id') == col('viewer_id')
+)\
+    .select(col('author_id')).alias('id')\
+        .distinct()\
+        .sort('author_id')\
+        .show()
 
 # COMMAND ----------
 
+# # To drop files
+# path = '/dbfs/FileStore/tables'
+# dbutils.fs.rm(path,recurse=True)
 
+# 5) 1683. Invalid Tweets
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+spark = SparkSession.builder.appName('Invalid Tweets').getOrCreate()
+
+schema = StructType([
+    StructField('tweet_id',IntegerType(),True),
+    StructField('content',StringType(),True)
+])
+
+data = [
+    (1, "Let us Code"),
+    (2, "More than fifteen chars are here!")
+]
+
+df = spark.createDataFrame(data,schema)
+Tweets = df.write.mode('overwrite').saveAsTable('Tweets')
+# Tweets = df.write.mode('overwrite').parquet(path)
+# path = '/dbfs/FileStore/tables/tweets'
+# Tweets = df.write.mode('overwrite').csv(path)
+# api = spark.read.csv(path,schema=schema)
+# api.select('tweet_id').show()
+sql = spark.sql("""
+select tweet_id from Tweets
+where length(content)>15 
+                """)
+df.select('tweet_id')\
+    .filter(
+        length(col('content'))>15
+    )\
+        .show()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Joins
+
+# COMMAND ----------
+
+# 1) 1378. Replace Employee ID With The Unique Identifier
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+spark = SparkSession.builder.appName('Replace Employee ID With The Unique Identifier').getOrCreate()
+
+emp_schema = StructType([
+StructField('id',IntegerType(),True),
+StructField('name',StringType(),True)
+])
+
+uni_schema = StructType([
+StructField('id',IntegerType(),True),
+StructField('unique_id',IntegerType(),True)
+])
+
+emp_data = [
+    (1, "Alice"),
+    (7, "Bob"),
+    (11, "Meir"),
+    (90, "Winston"),
+    (3, "Jonathan")
+]
+
+uni_data = [
+    (3,1),
+    (11,2),
+    (90,3)
+]
+
+df1 = spark.createDataFrame(emp_data,emp_schema)
+df2 = spark.createDataFrame(uni_data,uni_schema)
+employees = df1.write.mode('overwrite').saveAsTable('employees')
+EmployeeUNI = df2.write.mode('overwrite').saveAsTable('EmployeeUNI')
+
+sql = spark.sql("""
+                select u.unique_id,e.name from employees e left join EmployeeUNI u on e.id = u.id
+                """)
+df1.join(df2,df1['id']==df2['id'],'left')\
+    .select(df2['unique_id'],df1['name'])\
+        .show()
+
+# COMMAND ----------
+
+# 2) 1068. Product Sales Analysis I
+
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
